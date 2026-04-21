@@ -20,14 +20,26 @@ In the architecture of the "Attention Is All You Need" paper, the Self-Attention
 ```text
 C:\Ai_Expert\L52-Homework\
 ├── code\
-│   ├── config.py       # Hyperparameters (d_model, max_len, base)
-│   ├── model.py        # PE Matrix generation logic
-│   ├── visualize.py    # Matplotlib/Seaborn rendering suite
-│   └── main.py         # Orchestration script
+│   ├── config.py           # Legacy configuration
+│   ├── model.py            # PE Matrix generation logic
+│   ├── visualize.py        # Matplotlib/Seaborn rendering suite
+│   └── main.py             # Orchestration script
+├── config\
+│   └── config.py           # Dataclass-based modern configuration
 ├── docs\
-│   └── assets\         # Generated analytical visualizations
-├── requirements.txt    # Project dependencies
-└── README.md           # Technical documentation & Research Report
+│   └── assets\             # Generated analytical visualizations (PNG)
+├── scripts\
+│   └── app.py              # Interactive Streamlit Explorer
+├── tests\
+│   ├── conftest.py         # Pytest fixtures
+│   └── test_pe.py          # Validation suite for Research Questions
+├── output\
+│   └── analysis\           # Numerical results and JSON summaries
+├── PRD.md                  # Product Requirements Document
+├── PRD_RESEARCH.md         # Detailed Research Methodology
+├── PLAN.md                 # Implementation Roadmap
+├── requirements.txt        # Project dependencies
+└── README.md               # This document
 ```
 
 ---
@@ -37,24 +49,24 @@ C:\Ai_Expert\L52-Homework\
 The following visualizations were generated using our modular implementation to prove the mathematical properties of the Sinusoidal PE.
 
 ### 1. The Positional Encoding Matrix
-![PE Matrix](docs/assets/pe_heatmap.png)
+![PE Matrix Heatmap](docs/assets/pe_heatmap.png)
 *Figure 1: Heatmap of the PE matrix. Notice the high-frequency variations in the lower dimensions (left) and the slow, stable gradients in higher dimensions (right).*
 
 ### 2. Multi-Scale Representation
-![Wavelength Progression](docs/assets/wavelength_progression.png)
+![Wavelength Progression Plot](docs/assets/wavelength_progression.png)
 *Figure 2: The logarithmic progression of wavelengths across dimensions. Wavelengths range from $2\pi$ to $10000 \cdot 2\pi$, allowing the model to attend to both immediate neighbors and distant context.*
 
-### 3. Local vs. Global Context (Cosine Similarity)
-![Similarity Heatmap](docs/assets/similarity_heatmap.png)
-*Figure 3: Cosine similarity between position vectors. The strong diagonal represents high self-similarity, while the smooth decay indicates that the model can mathematically perceive distance.*
+### 3. Local vs. Global Context
+![Cosine Similarity Heatmap](docs/assets/similarity_heatmap.png)
+*Figure 3: Cosine similarity between position vectors showing the decay over distance.*
 
 ### 4. Vector Norm Stability
-![Norm Stability](docs/assets/norm_stability.png)
-*Figure 4: The L2 norm of the position vectors across the entire sequence. The stability of this norm ensures that positional information does not dominate the semantic signal.*
+![Norm Stability Plot](docs/assets/norm_stability.png)
+*Figure 4: The constant L2 norm of the position vectors across the entire sequence.*
 
-### 5. Phase Quadrature (Unit Circle)
-![Unit Circle](docs/assets/unit_circle.png)
-*Figure 5: The (sin, cos) values for a single frequency dimension plotted across all positions. The perfect circular trajectory demonstrates the phase quadrature necessary for linear relative transformations.*
+### 5. Phase Quadrature
+![Unit Circle Plot](docs/assets/unit_circle.png)
+*Figure 5: 2D subspace demonstration of the unit-circle property for sine-cosine pairs.*
 
 ---
 
@@ -82,34 +94,6 @@ The interleaving of sine (for even $2i$) and cosine (for odd $2i+1$) is not arbi
 
 ---
 
-## 🛠 Setup & Usage
-
-### Prerequisites
-- Python 3.10+
-- `pip`
-
-### Installation
-1. Create a virtual environment:
-   ```bash
-   python -m venv .venv
-   ```
-2. Activate the environment:
-   - **Windows**: `.venv\Scripts\activate`
-   - **Unix/macOS**: `source .venv/bin/activate`
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-### Execution
-To regenerate all analysis assets:
-```bash
-cd code
-python main.py
-```
-
----
-
 ## 📊 Visual Results Interpretation
 - **PE Heatmap**: Shows the characteristic "zebra" pattern where lower dimensions oscillate rapidly, providing high-precision local relative positioning, while higher dimensions provide a slowly shifting global context.
 - **Wavelength Progression**: Demonstrates that the Transformer's "spatial resolution" ranges from 6.28 tokens to over 60,000 tokens, following a strict exponential curve.
@@ -118,67 +102,35 @@ python main.py
 ### Quantitative Summary Table
 | Research Question | Prediction | Verified? | Key Metric |
 |---|---|---|---|
-| Uniqueness | All PE rows distinct | ✅ | min pairwise dist > 0 |
-| Multi-Scale | λ_i grows exponentially | ✅ | R²=0.999 on log scale |
-| Linear Transform | M_k · PE_pos = PE_{pos+k} | ✅ | max error < 1e-10 |
-| Extrapolation | Similarity decays | ✅ | sim(0,10000) < 0.01 |
-| Norm Stability | ||PE|| ≈ √(d/2) | ✅ | std < 1% of mean |
-| Sine vs Cosine | Unit circle per pair | ✅ | max |sin²+cos²-1| < 1e-15 |
+| 1. Uniqueness | All rows distinct | ✅ | min pairwise dist > 0 |
+| 2. Multi-Scale | Exponential λ growth | ✅ | R²=0.999 on log scale |
+| 3. Linear Transform | $M_k \cdot PE_{pos} = PE_{pos+k}$ | ✅ | max error < 1e-10 |
+| 4. Extrapolation | Smooth similarity decay | ✅ | sim(0,10000) < 0.01 |
+| 5. Norm Stability | $||PE|| \approx \sqrt{d/2}$ | ✅ | std < 1% of mean |
+| 6. Sine vs Cosine | Unit circle per pair | ✅ | max $|sin^2+cos^2-1| < 1e-15$ |
 
 ---
 
-## 🏗 Project Structure
-```text
-C:\Ai_Expert\L52-Homework\
-├── code\
-│   ├── config.py           # Legacy configuration
-│   ├── model.py            # PE Matrix generation logic
-│   ├── visualize.py        # Matplotlib/Seaborn rendering suite
-│   └── main.py             # Orchestration script
-├── config\
-│   └── config.py           # Dataclass-based modern configuration
-├── docs\
-│   └── assets\             # Generated analytical visualizations
-├── scripts\
-│   └── app.py              # Interactive Streamlit Explorer
-├── tests\
-│   ├── conftest.py         # Pytest fixtures
-│   └── test_pe.py          # Validation suite for Research Questions
-├── output\
-│   └── analysis\           # Numerical results and JSON summaries
-├── PRD.md                  # Product Requirements Document
-├── PRD_RESEARCH.md         # Detailed Research Methodology
-├── PLAN.md                 # Implementation Roadmap
-├── requirements.txt        # Project dependencies
-└── README.md               # This document
-```
+## 🛠 Setup & Execution Guide
 
----
+To replicate this analysis, follow these steps in your terminal:
 
-## 🛠 Execution Guide
-
-### Environment Setup
 ```bash
-# Create and activate venv
+# 1. Environment Setup
 python -m venv .venv
-source .venv/bin/activate  # Unix
-.venv\Scripts\activate     # Windows
+# Windows:
+.venv\Scripts\activate
+# Unix/macOS:
+source .venv/bin/activate
 
-# Install dependencies
+# 2. Install Dependencies
 pip install -r requirements.txt
-pip install streamlit pytest  # For new components
-```
+pip install streamlit pytest
 
-### Running Analysis
-```bash
-# Run full mathematical analysis
-python -m code.main
-
-# Launch interactive explorer
-streamlit run scripts/app.py
-
-# Run validation suite
-pytest tests/ -v
+# 3. Run Analysis & Verification
+python -m code.main           # Generates all plots in docs/assets/
+pytest tests/ -v              # Validates all 6 mathematical properties
+streamlit run scripts/app.py  # Launches the interactive explorer
 ```
 
 ---
