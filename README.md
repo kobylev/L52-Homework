@@ -1,5 +1,10 @@
 # Assignment 52: The Geometry of Thought - Positional Encoding Analysis
 
+> **TL;DR:** Sinusoidal PE is not just a hack — it encodes position as a point on a
+> high-dimensional torus, supports exact linear interpolation between positions via
+> rotation matrices, and maintains stable norms across arbitrarily long sequences.
+> This project proves all 6 of these properties geometrically and numerically.
+
 An advanced academic research into the mathematical foundation of the Transformer's spatial awareness mechanism, as pioneered by Vaswani et al. (2017).
 
 ## 🚀 The Core Idea
@@ -32,7 +37,7 @@ C:\Ai_Expert\L52-Homework\
 The following visualizations were generated using our modular implementation to prove the mathematical properties of the Sinusoidal PE.
 
 ### 1. The Positional Encoding Matrix
-![PE Matrix](docs/assets/pe_matrix.png)
+![PE Matrix](docs/assets/pe_heatmap.png)
 *Figure 1: Heatmap of the PE matrix. Notice the high-frequency variations in the lower dimensions (left) and the slow, stable gradients in higher dimensions (right).*
 
 ### 2. Multi-Scale Representation
@@ -42,6 +47,14 @@ The following visualizations were generated using our modular implementation to 
 ### 3. Local vs. Global Context (Cosine Similarity)
 ![Similarity Heatmap](docs/assets/similarity_heatmap.png)
 *Figure 3: Cosine similarity between position vectors. The strong diagonal represents high self-similarity, while the smooth decay indicates that the model can mathematically perceive distance.*
+
+### 4. Vector Norm Stability
+![Norm Stability](docs/assets/norm_stability.png)
+*Figure 4: The L2 norm of the position vectors across the entire sequence. The stability of this norm ensures that positional information does not dominate the semantic signal.*
+
+### 5. Phase Quadrature (Unit Circle)
+![Unit Circle](docs/assets/unit_circle.png)
+*Figure 5: The (sin, cos) values for a single frequency dimension plotted across all positions. The perfect circular trajectory demonstrates the phase quadrature necessary for linear relative transformations.*
 
 ---
 

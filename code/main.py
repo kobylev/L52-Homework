@@ -23,6 +23,12 @@ def main():
     similarity_matrix = pe_obj.get_cosine_similarity()
     visualize.plot_similarity_heatmap(similarity_matrix)
     
+    # 5. Generate Unit Circle Plot
+    visualize.plot_unit_circle(pe_matrix)
+    
+    # 6. Generate Norm Stability Plot
+    visualize.plot_norm_stability(pe_matrix)
+    
     print("All assets generated successfully in docs/assets/")
 
 if __name__ == "__main__":
